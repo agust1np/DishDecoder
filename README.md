@@ -3,15 +3,14 @@
 ## Features
 
 - Uses **LLaMA Vision 3.2-90B** to extract text from restaurant menu images with high accuracy.   
-- **AWS S3 Storage**: Securely uploads and stores images in an AWS S3 bucket.  
-- **Data Enrichment**: Performs additional Google searches to enrich menu items with relevant information.  
+- **AWS S3 Storage**: The S3 bucket stores menu images temporarily. Uploaded images get a public URL for LLaMA Vision to perform OCR. This approach ensures scalable handling of multiple images and provides accessible URLs for efficient processing.  
+- **Google Search**: Used to search for and obtain representative images of each dish on the menu that has been extracted by OCR.
 - **Upstash Redis Caching**: Improves performance and reduces overhead by caching frequent queries.
 
 ## Technologies
 
 - **Next.js**: React framework for server-side rendering and API routes  
 - **TypeScript**: Static type checking for a more robust development experience  
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI styling  
 - **AWS SDK**: Integrates with AWS services, primarily S3  
 - **Multer**: Middleware for handling file uploads  
 - **Axios**: HTTP client for making external API requests  
