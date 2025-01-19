@@ -3,15 +3,14 @@
 ## Features
 
 - Uses **LLaMA Vision 3.2-90B** to extract text from restaurant menu images with high accuracy.   
-- **AWS S3 Storage**: Securely uploads and stores images in an AWS S3 bucket.  
-- **Data Enrichment**: Performs additional Google searches to enrich menu items with relevant information.  
+- **AWS S3 Storage**: The S3 bucket stores menu images temporarily. Uploaded images get a public URL for LLaMA Vision to perform OCR. This approach ensures scalable handling of multiple images and provides accessible URLs for efficient processing.  
+- **Google Search**: Used to search for and obtain representative images of each dish on the menu that has been extracted by OCR.
 - **Upstash Redis Caching**: Improves performance and reduces overhead by caching frequent queries.
 
 ## Technologies
 
 - **Next.js**: React framework for server-side rendering and API routes  
 - **TypeScript**: Static type checking for a more robust development experience  
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI styling  
 - **AWS SDK**: Integrates with AWS services, primarily S3  
 - **Multer**: Middleware for handling file uploads  
 - **Axios**: HTTP client for making external API requests  
@@ -46,7 +45,7 @@
    - Disable public access blocking if you intend to allow uploads and external access.
 
 2. **Configure CORS**  
-   - Go to your new bucket’s settings.  
+   - Go to your new bucket's settings.  
    - Under **Permissions** > **CORS**, add the following configuration:
      ```json
      [
@@ -74,22 +73,86 @@
    - Create a new project, enable the **Custom Search API**, and generate API credentials.  
    - Set up a **Programmable Search Engine** via [Programmable Search Engine](https://programmablesearchengine.google.com/) to restrict your searches if needed.
 
-3. **Upstash Redis**  
+3. **Bing Image Search**  
+   - Sign up at the [Microsoft Azure Portal](https://portal.azure.com/).  
+   - Create a new resource for **Bing Search APIs** and obtain your **API Key**.
+
+4. **Upstash Redis**  
    - Sign up at [Upstash](https://upstash.com/) and retrieve your **Redis URL** and **Token**.
 
 ### Environment Variables
 
 Copy the `.env.example` file to `.env` and fill in your credentials:
 
+```env
+GOOGLE_API_KEY=your_google_api_key
+GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id
+BING_API_KEY=your_bing_api_key
+S3_UPLOAD_KEY=your_aws_access_key
+S3_UPLOAD_SECRET=your_aws_secret_key
+S3_UPLOAD_REGION=your_aws_region
+S3_UPLOAD_BUCKET=your_s3_bucket_name
+TOGETHER_API_KEY=your_together_api_key
+UPSTASH_REDIS_REST_URL=your_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_redis_token
+```
 
-### Installation
+## Image Search System
+
+The image search system uses a dual-engine approach to ensure image availability and relevance:
+
+1. **Primary Engine: Google Custom Search**
+   - Searches for images using the Google Custom Search API with specific terms like "plato comida receta" to get relevant results.
+   - If a valid image is found, it is returned through the proxy image endpoint.
+
+2. **Fallback Engine: Bing Image Search**
+   - If Google does not return valid results, it searches using the Bing Image Search API.
+   - Validates each image URL before use.
+   - Implements a retry mechanism to handle API rate limits.
+
+3. **Default Image**
+   - If both search engines fail to return a valid image, a default image is used to maintain visual consistency.
+
+## Installation
 1. Clone the repository.
 2. Configure `.env` with your API keys and credentials.
 3. Install dependencies with `npm install`.
 4. Start the development server with `npm run dev`.
 
-### Usage
+## Usage
 1. Upload an image of a restaurant menu to the `/upload` endpoint.
 2. The image will be processed by the OCR model and the result will be displayed in the `/ocr` endpoint.
 3. The parsed JSON will be displayed in the `/parse` endpoint.
 
+1. **Build and Start the Application**
+
+   ```bash
+   npm run build
+   npm start
+   ```
+
+2. **Upload Images**
+
+   - Use the `/api/upload` endpoint to upload images.
+   - Uploaded images are stored in AWS S3 and their URLs are returned.
+
+3. **Search Images**
+
+   - Use the `searchImages` function to retrieve images.
+   - It tries Google first, then Bing, and finally falls back to a default image if both fail.
+
+## Final Steps
+
+1. **Verify API Configurations**
+   - Ensure all API keys are correctly set in environment variables.
+   - Verify that Google and Bing APIs are enabled and functioning.
+
+2. **Test the Application**
+   - Perform image searches to ensure the fallback mechanism works correctly.
+   - Check the proxy image endpoint for validation and security.
+
+3. **Keep Dependencies Updated**
+   - Regularly update project dependencies for security and performance improvements:
+     ```bash
+     npm update
+     ```
