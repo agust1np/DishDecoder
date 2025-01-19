@@ -1,7 +1,6 @@
 {
   "name": "homi",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,24 +12,37 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.731.1",
+    "@aws-sdk/s3-request-presigner": "^3.731.1",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@shadcn/ui": "^0.0.4",
     "@types/express": "latest",
     "@types/multer": "^1.4.12",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@upstash/redis": "latest",
-    "aws-sdk": "latest",
     "axios": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "express": "latest",
+    "lucide-react": "^0.469.0",
     "multer": "latest",
     "next": "latest",
     "next-connect": "^0.13.0",
     "react": "latest",
     "react-dom": "latest",
+    "tailwind-merge": "^2.6.0",
     "together-ai": "^0.10.0",
     "typescript": "latest",
     "uuid": "latest",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7"
   }
 }

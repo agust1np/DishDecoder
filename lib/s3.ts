@@ -1,12 +1,11 @@
-import AWS from 'aws-sdk';
-import { Readable } from 'stream';
-import { v4 as uuidv4 } from 'uuid';
-import type { Multer } from 'multer';
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_UPLOAD_KEY,
-  secretAccessKey: process.env.S3_UPLOAD_SECRET,
+const s3Client = new S3Client({
   region: process.env.S3_UPLOAD_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_UPLOAD_KEY!,
+    secretAccessKey: process.env.S3_UPLOAD_SECRET!,
+  }
 });
 
 /**
@@ -17,11 +16,13 @@ const s3 = new AWS.S3({
 export const uploadToS3 = async (file: Express.Multer.File): Promise<string> => {
   const params = {
     Bucket: process.env.S3_UPLOAD_BUCKET!,
-    Key: `${uuidv4()}-${file.originalname}`,
+    Key: `${Date.now()}-${file.originalname}`,
     Body: file.buffer,
     ContentType: file.mimetype,
   };
 
-  const data = await s3.upload(params).promise();
-  return data.Location;
+  const command = new PutObjectCommand(params);
+  await s3Client.send(command);
+  
+  return `https://${params.Bucket}.s3.${process.env.S3_UPLOAD_REGION}.amazonaws.com/${params.Key}`;
 }; 
