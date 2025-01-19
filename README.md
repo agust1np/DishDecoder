@@ -99,19 +99,20 @@ UPSTASH_REDIS_REST_TOKEN=your_redis_token
 
 ## Image Search System
 
-The image search system uses a dual-engine approach to ensure image availability and relevance:
+The image search system uses Bing Image Search API to find relevant images:
 
-1. **Primary Engine: Google Custom Search**
-   - Searches for images using the Google Custom Search API with specific terms like "plato comida receta" to get relevant results.
-   - If a valid image is found, it is returned through the proxy image endpoint.
+1. **Primary Search:**
+   - Searches for images using specific terms related to food and recipes
+   - Validates each image URL before returning it
+   - Uses proxy endpoint for secure image delivery
 
-2. **Fallback Engine: Bing Image Search**
-   - If Google does not return valid results, it searches using the Bing Image Search API.
-   - Validates each image URL before use.
-   - Implements a retry mechanism to handle API rate limits.
+2. **Fallback Mechanism:**
+   - If the initial search fails, tries a simplified search with just the first word
+   - Implements retry logic for rate limit handling
+   - Adds random delays to prevent API throttling
 
-3. **Default Image**
-   - If both search engines fail to return a valid image, a default image is used to maintain visual consistency.
+3. **Default Image:**
+   - Returns a default food icon if no valid images are found
 
 ## Installation
 1. Clone the repository.
